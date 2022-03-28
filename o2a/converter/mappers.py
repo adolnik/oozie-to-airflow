@@ -33,6 +33,7 @@ from o2a.mappers.pig_mapper import PigMapper
 from o2a.mappers.shell_mapper import ShellMapper
 from o2a.mappers.spark_mapper import SparkMapper
 from o2a.mappers.ssh_mapper import SSHMapper
+from o2a.mappers.sqoop_mapper import SqoopMapper
 from o2a.mappers.subworkflow_mapper import SubworkflowMapper
 
 ACTION_MAP: Dict[str, Type[ActionMapper]] = {
@@ -49,4 +50,5 @@ ACTION_MAP: Dict[str, Type[ActionMapper]] = {
     "hive2": HiveMapper,
     "distcp": DistCpMapper,
     "email": EmailMapper,
+    "sqoop": SqoopMapper,
 }

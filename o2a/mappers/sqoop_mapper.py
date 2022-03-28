@@ -29,7 +29,7 @@ from o2a.utils.file_archive_extractors import ArchiveExtractor, FileExtractor
 
 
 # pylint: disable=too-many-instance-attributes
-from o2a.utils.param_extractor import extract_param_values_from_action_node
+from o2a.utils.args_extractor import extract_arg_values_from_action_node
 from o2a.utils.xml_utils import get_tag_el_text
 
 
@@ -37,14 +37,14 @@ TAG_SCRIPT = "script"
 TAG_QUERY = "query"
 
 
-class HiveMapper(ActionMapper):
+class SqoopMapper(ActionMapper):
     """
-    Converts a Hive Oozie node to an Airflow task.
+    Converts a Sqoop Oozie node to an Airflow task.
     """
 
     def __init__(self, oozie_node: Element, name: str, props: PropertySet, **kwargs):
         ActionMapper.__init__(self, oozie_node=oozie_node, name=name, props=props, **kwargs)
-        self.variables: Optional[Dict[str, str]] = None
+        self.args: Optional[Dict[str, str]] = None
         self.query: Optional[str] = None
         self.script: Optional[str] = None
         self.hdfs_files: Optional[List[str]] = None
@@ -67,9 +67,11 @@ class HiveMapper(ActionMapper):
                 f"Only one can be set at the same time."
             )
 
-        self.variables = extract_param_values_from_action_node(self.oozie_node)
+        self.args = extract_arg_values_from_action_node(self.oozie_node)
         _, self.hdfs_files = self.file_extractor.parse_node()
         _, self.hdfs_archives = self.archive_extractor.parse_node()
+        self.query = self.args[TAG_QUERY]
+        self.query = self.args[TAG_QUERY]
 
     def to_tasks_and_relations(self):
         action_task = Task(
@@ -81,7 +83,7 @@ class HiveMapper(ActionMapper):
                 props=self.props,
                 archives=self.hdfs_archives,
                 files=self.hdfs_files,
-                variables=self.variables,
+                variables=self.args,
             ),
         )
         tasks = [action_task]
